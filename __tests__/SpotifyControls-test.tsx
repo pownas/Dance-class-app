@@ -139,4 +139,32 @@ describe('SpotifyControls', () => {
     });
     expect(onTrackNoteChange).toHaveBeenCalledWith('Ny anteckning');
   });
+
+  it('renders queue button when tracks are provided', async () => {
+    let tree: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(
+        <SpotifyControls
+          {...defaultProps}
+          currentTrack={mockTrack}
+          tracks={[mockTrack]}
+          currentTrackIndex={0}
+        />,
+      );
+    });
+    expect(JSON.stringify(tree!.toJSON())).toContain('☰');
+  });
+
+  it('does not render queue button when no tracks are provided', async () => {
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls {...defaultProps} />,
+      );
+    });
+    const queueBtn = instance!.root.findAll(
+      (node) => node.props.accessibilityLabel === 'Open queue',
+    );
+    expect(queueBtn.length).toBe(0);
+  });
 });

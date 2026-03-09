@@ -89,6 +89,10 @@ export default function App() {
     setTrackNotes((prev) => ({ ...prev, [trackId]: note }));
   };
 
+  const handleSelectTrack = (index: number) => {
+    setCurrentTrackIndex(index);
+  };
+
   const currentTrack = DEMO_PLAYLIST.tracks[currentTrackIndex];
 
   return (
@@ -100,11 +104,14 @@ export default function App() {
         currentTrack={currentTrack}
         playlistName={DEMO_PLAYLIST.name}
         trackNote={trackNotes[currentTrack.id] ?? ''}
+        tracks={DEMO_PLAYLIST.tracks}
+        currentTrackIndex={currentTrackIndex}
         onTogglePlay={handleTogglePlay}
         onNextTrack={handleNextTrack}
         onPrevTrack={handlePrevTrack}
         onVolumeChange={handleVolumeChange}
         onTrackNoteChange={handleTrackNoteChange}
+        onSelectTrack={handleSelectTrack}
       />
       <NotesEditor
         value={notes}

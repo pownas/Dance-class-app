@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { PlaybackState, Track } from '../types';
+import PlaylistQueue from './PlaylistQueue';
 
 const SPOTIFY_GREEN = '#1DB954';
 const SKIP_BUTTON_COLOR = '#FF8C00';
@@ -19,11 +20,14 @@ interface SpotifyControlsProps {
   currentTrack?: Track;
   playlistName?: string;
   trackNote?: string;
+  tracks?: Track[];
+  currentTrackIndex?: number;
   onTogglePlay: () => void;
   onNextTrack: () => void;
   onPrevTrack: () => void;
   onVolumeChange: (value: number) => void;
   onTrackNoteChange?: (note: string) => void;
+  onSelectTrack?: (index: number) => void;
 }
 
 export default function SpotifyControls({
@@ -32,15 +36,36 @@ export default function SpotifyControls({
   currentTrack,
   playlistName,
   trackNote,
+  tracks,
+  currentTrackIndex,
   onTogglePlay,
   onNextTrack,
   onPrevTrack,
   onVolumeChange,
   onTrackNoteChange,
+  onSelectTrack,
 }: SpotifyControlsProps) {
+  const [queueVisible, setQueueVisible] = useState(false);
+
+  const handleSelectTrack = (index: number) => {
+    onSelectTrack?.(index);
+    setQueueVisible(false);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Spotify</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>Spotify</Text>
+        {tracks && tracks.length > 0 && (
+          <TouchableOpacity
+            onPress={() => setQueueVisible(true)}
+            accessibilityLabel="Open queue"
+            style={styles.queueButton}
+          >
+            <Text style={styles.queueIcon}>☰</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       {currentTrack && (
         <View style={styles.trackInfo}>
           <Text style={styles.trackName} numberOfLines={1}>{currentTrack.name}</Text>
@@ -88,6 +113,16 @@ export default function SpotifyControls({
         multiline
         accessibilityLabel="Track note"
       />
+      {tracks && tracks.length > 0 && (
+        <PlaylistQueue
+          visible={queueVisible}
+          tracks={tracks}
+          currentTrackIndex={currentTrackIndex ?? 0}
+          playlistName={playlistName ?? ''}
+          onSelectTrack={handleSelectTrack}
+          onClose={() => setQueueVisible(false)}
+        />
+      )}
     </View>
   );
 }
@@ -99,13 +134,26 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#18a34a',
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   title: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-    marginBottom: 8,
+    opacity: 0.85,
+  },
+  queueButton: {
+    padding: 4,
+  },
+  queueIcon: {
+    color: '#fff',
+    fontSize: 18,
     opacity: 0.85,
   },
   trackInfo: {
