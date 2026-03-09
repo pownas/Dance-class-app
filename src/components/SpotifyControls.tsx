@@ -122,7 +122,7 @@ export default function SpotifyControls({
         <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onSkipBack10} accessibilityLabel="Skip back 10 seconds">
           <Text style={styles.skipSecondIcon}>−10</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.controlButton, styles.playButton]} onPress={onTogglePlay} accessibilityLabel={playbackState === 'playing' ? 'Pause' : 'Play'}>
+        <TouchableOpacity style={styles.playButton} onPress={onTogglePlay} accessibilityLabel={playbackState === 'playing' ? 'Pause' : 'Play'}>
           <Text style={styles.playIcon}>{playbackState === 'playing' ? '⏸' : '▶'}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onSkipForward10} accessibilityLabel="Skip forward 10 seconds">
@@ -247,13 +247,22 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   playButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 32,
-    padding: 12,
+    backgroundColor: '#fff',
+    borderRadius: 36,
+    width: 64,
+    height: 64,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   playIcon: {
-    fontSize: 28,
-    color: '#fff',
+    fontSize: 30,
+    color: SPOTIFY_GREEN,
+    lineHeight: 34,
   },
   progressRow: {
     flexDirection: 'row',
