@@ -13,11 +13,11 @@ const AUTOSAVE_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
 const DEMO_PLAYLIST: Playlist = {
   name: 'Dance Music Playlist',
   tracks: [
-    { id: '1', name: 'West Coast Swing Mix Vol. 1', artist: 'WCS Collection' },
-    { id: '2', name: 'West Coast Swing Mix Vol. 2', artist: 'WCS Collection' },
-    { id: '3', name: 'West Coast Swing Mix Vol. 3', artist: 'WCS Collection' },
-    { id: '4', name: 'Boogie Wonderland', artist: 'Earth, Wind & Fire' },
-    { id: '5', name: 'Ain\'t Nobody', artist: 'Chaka Khan' },
+    { id: '1', name: 'West Coast Swing Mix Vol. 1', artist: 'WCS Collection', bpm: 102 },
+    { id: '2', name: 'West Coast Swing Mix Vol. 2', artist: 'WCS Collection', bpm: 110 },
+    { id: '3', name: 'West Coast Swing Mix Vol. 3', artist: 'WCS Collection', bpm: 118 },
+    { id: '4', name: 'Boogie Wonderland', artist: 'Earth, Wind & Fire', bpm: 119 },
+    { id: '5', name: "Ain't Nobody", artist: 'Chaka Khan', bpm: 111 },
   ],
 };
 
@@ -27,6 +27,7 @@ export default function App() {
   const [volume, setVolume] = useState(70);
   const [syncStatus, setSyncStatus] = useState<'saved' | 'pending' | 'error'>('saved');
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [trackNotes, setTrackNotes] = useState<Record<string, string>>({});
 
   const lastSyncedNotesRef = useRef(INITIAL_NOTES);
 
@@ -83,6 +84,11 @@ export default function App() {
     setVolume(value);
   };
 
+  const handleTrackNoteChange = (note: string) => {
+    const trackId = DEMO_PLAYLIST.tracks[currentTrackIndex].id;
+    setTrackNotes((prev) => ({ ...prev, [trackId]: note }));
+  };
+
   const currentTrack = DEMO_PLAYLIST.tracks[currentTrackIndex];
 
   return (
@@ -93,10 +99,12 @@ export default function App() {
         volume={volume}
         currentTrack={currentTrack}
         playlistName={DEMO_PLAYLIST.name}
+        trackNote={trackNotes[currentTrack.id] ?? ''}
         onTogglePlay={handleTogglePlay}
         onNextTrack={handleNextTrack}
         onPrevTrack={handlePrevTrack}
         onVolumeChange={handleVolumeChange}
+        onTrackNoteChange={handleTrackNoteChange}
       />
       <NotesEditor
         value={notes}

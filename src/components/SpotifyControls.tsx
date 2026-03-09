@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
@@ -10,16 +11,19 @@ import { PlaybackState, Track } from '../types';
 
 const SPOTIFY_GREEN = '#1DB954';
 const SKIP_BUTTON_COLOR = '#FF8C00';
+const BPM_SEPARATOR = '  •  ';
 
 interface SpotifyControlsProps {
   playbackState: PlaybackState;
   volume: number;
   currentTrack?: Track;
   playlistName?: string;
+  trackNote?: string;
   onTogglePlay: () => void;
   onNextTrack: () => void;
   onPrevTrack: () => void;
   onVolumeChange: (value: number) => void;
+  onTrackNoteChange?: (note: string) => void;
 }
 
 export default function SpotifyControls({
@@ -27,10 +31,12 @@ export default function SpotifyControls({
   volume,
   currentTrack,
   playlistName,
+  trackNote,
   onTogglePlay,
   onNextTrack,
   onPrevTrack,
   onVolumeChange,
+  onTrackNoteChange,
 }: SpotifyControlsProps) {
   return (
     <View style={styles.container}>
@@ -38,7 +44,10 @@ export default function SpotifyControls({
       {currentTrack && (
         <View style={styles.trackInfo}>
           <Text style={styles.trackName} numberOfLines={1}>{currentTrack.name}</Text>
-          <Text style={styles.trackArtist} numberOfLines={1}>{currentTrack.artist}</Text>
+          <Text style={styles.trackArtist} numberOfLines={1}>
+            {currentTrack.artist}
+            {currentTrack.bpm != null ? `${BPM_SEPARATOR}${currentTrack.bpm} BPM` : ''}
+          </Text>
         </View>
       )}
       {!currentTrack && playlistName && (
@@ -70,6 +79,15 @@ export default function SpotifyControls({
         />
         <Text style={styles.volumeLabel}>🔊</Text>
       </View>
+      <TextInput
+        style={styles.trackNoteInput}
+        value={trackNote}
+        onChangeText={onTrackNoteChange}
+        placeholder="Anteckning om låt..."
+        placeholderTextColor="rgba(255,255,255,0.5)"
+        multiline
+        accessibilityLabel="Track note"
+      />
     </View>
   );
 }
@@ -152,5 +170,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 40,
     marginHorizontal: 8,
+  },
+  trackNoteInput: {
+    marginTop: 10,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    color: '#fff',
+    fontSize: 13,
+    minHeight: 40,
   },
 });

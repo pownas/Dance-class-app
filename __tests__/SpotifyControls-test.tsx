@@ -13,7 +13,7 @@ describe('SpotifyControls', () => {
     onVolumeChange: jest.fn(),
   };
 
-  const mockTrack = { id: '1', name: 'West Coast Swing Mix Vol. 3', artist: 'WCS Collection' };
+  const mockTrack = { id: '1', name: 'West Coast Swing Mix Vol. 3', artist: 'WCS Collection', bpm: 118 };
 
   it('renders play icon when paused', async () => {
     let tree: renderer.ReactTestRenderer;
@@ -93,5 +93,50 @@ describe('SpotifyControls', () => {
       );
     });
     expect(JSON.stringify(tree!.toJSON())).toContain('Dance Music Playlist');
+  });
+
+  it('displays BPM in the artist row when track has bpm', async () => {
+    let tree: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(
+        <SpotifyControls {...defaultProps} currentTrack={mockTrack} />,
+      );
+    });
+    expect(JSON.stringify(tree!.toJSON())).toContain('118 BPM');
+  });
+
+  it('renders track note input with provided value', async () => {
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls {...defaultProps} currentTrack={mockTrack} trackNote="Bra tempo för uppvärmning" />,
+      );
+    });
+    const input = instance!.root.findAll(
+      (node) => node.props.accessibilityLabel === 'Track note',
+    )[0];
+    expect(input.props.value).toBe('Bra tempo för uppvärmning');
+  });
+
+  it('calls onTrackNoteChange when track note input changes', async () => {
+    const onTrackNoteChange = jest.fn();
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls
+          {...defaultProps}
+          currentTrack={mockTrack}
+          trackNote=""
+          onTrackNoteChange={onTrackNoteChange}
+        />,
+      );
+    });
+    const input = instance!.root.findAll(
+      (node) => node.props.accessibilityLabel === 'Track note',
+    )[0];
+    await act(async () => {
+      input.props.onChangeText('Ny anteckning');
+    });
+    expect(onTrackNoteChange).toHaveBeenCalledWith('Ny anteckning');
   });
 });

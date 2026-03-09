@@ -9,6 +9,7 @@ export interface Track {
   id: string;
   name: string;
   artist: string;
+  bpm?: number;
 }
 
 export interface Playlist {
