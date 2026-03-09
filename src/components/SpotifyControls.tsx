@@ -13,6 +13,7 @@ import PlaylistQueue from './PlaylistQueue';
 const SPOTIFY_GREEN = '#1DB954';
 const SKIP_BUTTON_COLOR = '#FF8C00';
 const BPM_SEPARATOR = '  •  ';
+const PLAY_BUTTON_SIZE = 64;
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -248,9 +249,9 @@ const styles = StyleSheet.create({
   },
   playButton: {
     backgroundColor: '#fff',
-    borderRadius: 36,
-    width: 64,
-    height: 64,
+    borderRadius: PLAY_BUTTON_SIZE / 2,
+    width: PLAY_BUTTON_SIZE,
+    height: PLAY_BUTTON_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -262,7 +263,6 @@ const styles = StyleSheet.create({
   playIcon: {
     fontSize: 30,
     color: SPOTIFY_GREEN,
-    lineHeight: 34,
   },
   progressRow: {
     flexDirection: 'row',
