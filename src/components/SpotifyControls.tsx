@@ -14,6 +14,12 @@ const SPOTIFY_GREEN = '#1DB954';
 const SKIP_BUTTON_COLOR = '#FF8C00';
 const BPM_SEPARATOR = '  •  ';
 
+function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
 interface SpotifyControlsProps {
   playbackState: PlaybackState;
   volume: number;
@@ -23,12 +29,17 @@ interface SpotifyControlsProps {
   tracks?: Track[];
   currentTrackIndex?: number;
   trackNotes?: Record<string, string>;
+  songProgress?: number;
+  songDuration?: number;
   onTogglePlay: () => void;
   onNextTrack: () => void;
   onPrevTrack: () => void;
   onVolumeChange: (value: number) => void;
   onTrackNoteChange?: (note: string) => void;
   onSelectTrack?: (index: number) => void;
+  onSeek?: (value: number) => void;
+  onSkipBack10?: () => void;
+  onSkipForward10?: () => void;
 }
 
 export default function SpotifyControls({
@@ -40,12 +51,17 @@ export default function SpotifyControls({
   tracks,
   currentTrackIndex,
   trackNotes,
+  songProgress,
+  songDuration,
   onTogglePlay,
   onNextTrack,
   onPrevTrack,
   onVolumeChange,
   onTrackNoteChange,
   onSelectTrack,
+  onSeek,
+  onSkipBack10,
+  onSkipForward10,
 }: SpotifyControlsProps) {
   const [queueVisible, setQueueVisible] = useState(false);
 
@@ -80,12 +96,37 @@ export default function SpotifyControls({
       {!currentTrack && playlistName && (
         <Text style={styles.playlistName} numberOfLines={1}>{playlistName}</Text>
       )}
+      {songDuration != null && songDuration > 0 && (
+        <View style={styles.progressRow}>
+          <Text style={styles.progressTime}>
+            {formatTime(((songProgress ?? 0) / 100) * songDuration)}
+          </Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={100}
+            value={songProgress ?? 0}
+            onValueChange={onSeek}
+            minimumTrackTintColor="#fff"
+            maximumTrackTintColor="rgba(255,255,255,0.4)"
+            thumbTintColor="#fff"
+            accessibilityLabel="Song progress"
+          />
+          <Text style={styles.progressTime}>{formatTime(songDuration)}</Text>
+        </View>
+      )}
       <View style={styles.controls}>
         <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onPrevTrack} accessibilityLabel="Previous track">
           <Text style={styles.controlIcon}>⏮</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onSkipBack10} accessibilityLabel="Skip back 10 seconds">
+          <Text style={styles.skipSecondIcon}>−10</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.controlButton, styles.playButton]} onPress={onTogglePlay} accessibilityLabel={playbackState === 'playing' ? 'Pause' : 'Play'}>
           <Text style={styles.playIcon}>{playbackState === 'playing' ? '⏸' : '▶'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onSkipForward10} accessibilityLabel="Skip forward 10 seconds">
+          <Text style={styles.skipSecondIcon}>+10</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onNextTrack} accessibilityLabel="Next track">
           <Text style={styles.controlIcon}>⏭</Text>
@@ -185,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 24,
+    gap: 12,
     marginBottom: 12,
   },
   controlButton: {
@@ -200,6 +241,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#fff',
   },
+  skipSecondIcon: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
+  },
   playButton: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 32,
@@ -208,6 +254,17 @@ const styles = StyleSheet.create({
   playIcon: {
     fontSize: 28,
     color: '#fff',
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  progressTime: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 11,
+    minWidth: 32,
+    textAlign: 'center',
   },
   volumeRow: {
     flexDirection: 'row',

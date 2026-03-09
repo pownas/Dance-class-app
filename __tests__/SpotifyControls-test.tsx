@@ -155,6 +155,81 @@ describe('SpotifyControls', () => {
     expect(JSON.stringify(tree!.toJSON())).toContain('☰');
   });
 
+  it('calls onSkipBack10 when skip-back button pressed', async () => {
+    const onSkipBack10 = jest.fn();
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls {...defaultProps} onSkipBack10={onSkipBack10} />,
+      );
+    });
+    await act(async () => {
+      instance!.root
+        .findAll((node) => node.props.accessibilityLabel === 'Skip back 10 seconds')[0]
+        .props.onPress();
+    });
+    expect(onSkipBack10).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onSkipForward10 when skip-forward button pressed', async () => {
+    const onSkipForward10 = jest.fn();
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls {...defaultProps} onSkipForward10={onSkipForward10} />,
+      );
+    });
+    await act(async () => {
+      instance!.root
+        .findAll((node) => node.props.accessibilityLabel === 'Skip forward 10 seconds')[0]
+        .props.onPress();
+    });
+    expect(onSkipForward10).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders song progress slider when songDuration is provided', async () => {
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls {...defaultProps} songProgress={30} songDuration={180} />,
+      );
+    });
+    const progressSlider = instance!.root.findAll(
+      (node) => node.props.accessibilityLabel === 'Song progress',
+    );
+    expect(progressSlider.length).toBeGreaterThan(0);
+    expect(progressSlider[0].props.value).toBe(30);
+  });
+
+  it('does not render song progress slider when songDuration is not provided', async () => {
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(<SpotifyControls {...defaultProps} />);
+    });
+    const progressSlider = instance!.root.findAll(
+      (node) => node.props.accessibilityLabel === 'Song progress',
+    );
+    expect(progressSlider.length).toBe(0);
+  });
+
+  it('calls onSeek when song progress slider value changes', async () => {
+    const onSeek = jest.fn();
+    let instance: renderer.ReactTestRenderer;
+    await act(async () => {
+      instance = renderer.create(
+        <SpotifyControls {...defaultProps} songProgress={0} songDuration={180} onSeek={onSeek} />,
+      );
+    });
+    const progressSlider = instance!.root.findAll(
+      (node) => node.props.accessibilityLabel === 'Song progress',
+    )[0];
+    await act(async () => {
+      progressSlider.props.onValueChange(50);
+    });
+    expect(onSeek).toHaveBeenCalledWith(50);
+  });
+
+
   it('does not render queue button when no tracks are provided', async () => {
     let instance: renderer.ReactTestRenderer;
     await act(async () => {
