@@ -16,6 +16,7 @@ interface PlaylistQueueProps {
   tracks: Track[];
   currentTrackIndex: number;
   playlistName: string;
+  trackNotes?: Record<string, string>;
   onSelectTrack: (index: number) => void;
   onClose: () => void;
 }
@@ -25,6 +26,7 @@ export default function PlaylistQueue({
   tracks,
   currentTrackIndex,
   playlistName,
+  trackNotes,
   onSelectTrack,
   onClose,
 }: PlaylistQueueProps) {
@@ -48,6 +50,7 @@ export default function PlaylistQueue({
           <ScrollView style={styles.trackList}>
             {tracks.map((track, index) => {
               const isActive = index === currentTrackIndex;
+              const note = trackNotes?.[track.id];
               return (
                 <TouchableOpacity
                   key={track.id}
@@ -68,11 +71,11 @@ export default function PlaylistQueue({
                       style={[styles.trackName, isActive && styles.activeTrackName]}
                       numberOfLines={1}
                     >
-                      {track.name}
+                      {track.artist} — {track.name}
                     </Text>
-                    <Text style={styles.trackArtist} numberOfLines={1}>
-                      {track.artist}
-                      {track.bpm != null ? `  •  ${track.bpm} BPM` : ''}
+                    <Text style={styles.trackMeta} numberOfLines={1}>
+                      {track.bpm != null ? `${track.bpm} BPM` : ''}
+                      {note ? `  •  ${note}` : ''}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -95,7 +98,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#282828',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    maxHeight: '80%',
+    flex: 1,
+    marginTop: 40,
     paddingBottom: 32,
   },
   header: {
@@ -167,7 +171,7 @@ const styles = StyleSheet.create({
   activeTrackName: {
     color: SPOTIFY_GREEN,
   },
-  trackArtist: {
+  trackMeta: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: 12,
     marginTop: 2,

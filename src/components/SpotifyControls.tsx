@@ -22,6 +22,7 @@ interface SpotifyControlsProps {
   trackNote?: string;
   tracks?: Track[];
   currentTrackIndex?: number;
+  trackNotes?: Record<string, string>;
   onTogglePlay: () => void;
   onNextTrack: () => void;
   onPrevTrack: () => void;
@@ -38,6 +39,7 @@ export default function SpotifyControls({
   trackNote,
   tracks,
   currentTrackIndex,
+  trackNotes,
   onTogglePlay,
   onNextTrack,
   onPrevTrack,
@@ -119,6 +121,7 @@ export default function SpotifyControls({
           tracks={tracks}
           currentTrackIndex={currentTrackIndex ?? 0}
           playlistName={playlistName ?? ''}
+          trackNotes={trackNotes}
           onSelectTrack={handleSelectTrack}
           onClose={() => setQueueVisible(false)}
         />
