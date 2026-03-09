@@ -5,16 +5,28 @@ import { StatusBar } from 'expo-status-bar';
 import SpotifyControls from './src/components/SpotifyControls';
 import NotesEditor from './src/components/NotesEditor';
 import { saveNoteVersion } from './src/services/notesService';
-import { PlaybackState } from './src/types';
+import { PlaybackState, Playlist } from './src/types';
 
 const INITIAL_NOTES = '# Danskurs Vecka 1\n\n- Uppvärmning 10 min\n- Koreografi del 1\n- Repetition av steg från förra veckan\n\n## WCS Steg 1\n\n1. Starta med grundsteget\n2. Lägg till arm-styling\n';
 const AUTOSAVE_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
+
+const DEMO_PLAYLIST: Playlist = {
+  name: 'Dance Music Playlist',
+  tracks: [
+    { id: '1', name: 'West Coast Swing Mix Vol. 1', artist: 'WCS Collection' },
+    { id: '2', name: 'West Coast Swing Mix Vol. 2', artist: 'WCS Collection' },
+    { id: '3', name: 'West Coast Swing Mix Vol. 3', artist: 'WCS Collection' },
+    { id: '4', name: 'Boogie Wonderland', artist: 'Earth, Wind & Fire' },
+    { id: '5', name: 'Ain\'t Nobody', artist: 'Chaka Khan' },
+  ],
+};
 
 export default function App() {
   const [notes, setNotes] = useState(INITIAL_NOTES);
   const [playbackState, setPlaybackState] = useState<PlaybackState>('paused');
   const [volume, setVolume] = useState(70);
   const [syncStatus, setSyncStatus] = useState<'saved' | 'pending' | 'error'>('saved');
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
   const lastSyncedNotesRef = useRef(INITIAL_NOTES);
 
@@ -54,25 +66,24 @@ export default function App() {
     }
   };
 
-  // Spotify control handlers (stubs — wire up Spotify SDK here)
+  // Spotify control handlers
   const handleTogglePlay = () => {
     setPlaybackState((prev) => (prev === 'playing' ? 'paused' : 'playing'));
   };
 
   const handleNextTrack = () => {
-    // TODO: integrate Spotify App Remote SDK or Spotify Web API
-    console.log('Next track');
+    setCurrentTrackIndex((prev) => (prev + 1) % DEMO_PLAYLIST.tracks.length);
   };
 
   const handlePrevTrack = () => {
-    // TODO: integrate Spotify App Remote SDK or Spotify Web API
-    console.log('Previous track');
+    setCurrentTrackIndex((prev) => (prev - 1 + DEMO_PLAYLIST.tracks.length) % DEMO_PLAYLIST.tracks.length);
   };
 
   const handleVolumeChange = (value: number) => {
     setVolume(value);
-    // TODO: pass volume to Spotify SDK
   };
+
+  const currentTrack = DEMO_PLAYLIST.tracks[currentTrackIndex];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -80,6 +91,8 @@ export default function App() {
       <SpotifyControls
         playbackState={playbackState}
         volume={volume}
+        currentTrack={currentTrack}
+        playlistName={DEMO_PLAYLIST.name}
         onTogglePlay={handleTogglePlay}
         onNextTrack={handleNextTrack}
         onPrevTrack={handlePrevTrack}

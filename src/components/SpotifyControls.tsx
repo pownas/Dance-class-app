@@ -6,11 +6,16 @@ import {
   StyleSheet,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { PlaybackState } from '../types';
+import { PlaybackState, Track } from '../types';
+
+const SPOTIFY_GREEN = '#1DB954';
+const SKIP_BUTTON_COLOR = '#FF8C00';
 
 interface SpotifyControlsProps {
   playbackState: PlaybackState;
   volume: number;
+  currentTrack?: Track;
+  playlistName?: string;
   onTogglePlay: () => void;
   onNextTrack: () => void;
   onPrevTrack: () => void;
@@ -20,6 +25,8 @@ interface SpotifyControlsProps {
 export default function SpotifyControls({
   playbackState,
   volume,
+  currentTrack,
+  playlistName,
   onTogglePlay,
   onNextTrack,
   onPrevTrack,
@@ -28,14 +35,23 @@ export default function SpotifyControls({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Spotify</Text>
+      {currentTrack && (
+        <View style={styles.trackInfo}>
+          <Text style={styles.trackName} numberOfLines={1}>{currentTrack.name}</Text>
+          <Text style={styles.trackArtist} numberOfLines={1}>{currentTrack.artist}</Text>
+        </View>
+      )}
+      {!currentTrack && playlistName && (
+        <Text style={styles.playlistName} numberOfLines={1}>{playlistName}</Text>
+      )}
       <View style={styles.controls}>
-        <TouchableOpacity style={styles.controlButton} onPress={onPrevTrack} accessibilityLabel="Previous track">
+        <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onPrevTrack} accessibilityLabel="Previous track">
           <Text style={styles.controlIcon}>⏮</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.controlButton, styles.playButton]} onPress={onTogglePlay} accessibilityLabel={playbackState === 'playing' ? 'Pause' : 'Play'}>
           <Text style={styles.playIcon}>{playbackState === 'playing' ? '⏸' : '▶'}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.controlButton} onPress={onNextTrack} accessibilityLabel="Next track">
+        <TouchableOpacity style={[styles.controlButton, styles.skipButton]} onPress={onNextTrack} accessibilityLabel="Next track">
           <Text style={styles.controlIcon}>⏭</Text>
         </TouchableOpacity>
       </View>
@@ -61,7 +77,7 @@ export default function SpotifyControls({
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#1DB954',
+    backgroundColor: SPOTIFY_GREEN,
     borderBottomWidth: 1,
     borderBottomColor: '#18a34a',
   },
@@ -74,6 +90,28 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     opacity: 0.85,
   },
+  trackInfo: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  trackName: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  trackArtist: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  playlistName: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
   controls: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -83,6 +121,11 @@ const styles = StyleSheet.create({
   },
   controlButton: {
     padding: 8,
+  },
+  skipButton: {
+    backgroundColor: SKIP_BUTTON_COLOR,
+    borderRadius: 8,
+    padding: 10,
   },
   controlIcon: {
     fontSize: 28,

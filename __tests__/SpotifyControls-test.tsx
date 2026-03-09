@@ -13,6 +13,8 @@ describe('SpotifyControls', () => {
     onVolumeChange: jest.fn(),
   };
 
+  const mockTrack = { id: '1', name: 'West Coast Swing Mix Vol. 3', artist: 'WCS Collection' };
+
   it('renders play icon when paused', async () => {
     let tree: renderer.ReactTestRenderer;
     await act(async () => {
@@ -69,5 +71,27 @@ describe('SpotifyControls', () => {
         .props.onPress();
     });
     expect(onNextTrack).toHaveBeenCalledTimes(1);
+  });
+
+  it('displays current track name and artist when provided', async () => {
+    let tree: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(
+        <SpotifyControls {...defaultProps} currentTrack={mockTrack} />,
+      );
+    });
+    const json = JSON.stringify(tree!.toJSON());
+    expect(json).toContain('West Coast Swing Mix Vol. 3');
+    expect(json).toContain('WCS Collection');
+  });
+
+  it('displays playlist name when no current track is provided', async () => {
+    let tree: renderer.ReactTestRenderer;
+    await act(async () => {
+      tree = renderer.create(
+        <SpotifyControls {...defaultProps} playlistName="Dance Music Playlist" />,
+      );
+    });
+    expect(JSON.stringify(tree!.toJSON())).toContain('Dance Music Playlist');
   });
 });
