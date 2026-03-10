@@ -3,8 +3,10 @@ import { SafeAreaView, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import SpotifyControls from './src/components/SpotifyControls';
+import SpotifyLogin from './src/components/SpotifyLogin';
 import NotesEditor from './src/components/NotesEditor';
 import { saveNoteVersion } from './src/services/notesService';
+import { useSpotifyAuth } from './src/hooks/useSpotifyAuth';
 import { PlaybackState, Playlist } from './src/types';
 
 const INITIAL_NOTES = '# Danskurs Vecka 1\n\n- Uppvärmning 10 min\n- Koreografi del 1\n- Repetition av steg från förra veckan\n\n## WCS Steg 1\n\n1. Starta med grundsteget\n2. Lägg till arm-styling\n';
@@ -49,6 +51,7 @@ const DEMO_PLAYLIST: Playlist = {
 };
 
 export default function App() {
+  const { authState, login, logout } = useSpotifyAuth();
   const [notes, setNotes] = useState(INITIAL_NOTES);
   const [playbackState, setPlaybackState] = useState<PlaybackState>('paused');
   const [volume, setVolume] = useState(70);
@@ -156,6 +159,16 @@ export default function App() {
 
   const currentTrack = DEMO_PLAYLIST.tracks[currentTrackIndex];
 
+  // Show the login screen until the user is authenticated
+  if (authState.status !== 'authenticated') {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="light" />
+        <SpotifyLogin authState={authState} onLogin={login} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
@@ -179,6 +192,7 @@ export default function App() {
         onSeek={handleSeek}
         onSkipBack10={handleSkipBack10}
         onSkipForward10={handleSkipForward10}
+        onLogout={logout}
       />
       <NotesEditor
         value={notes}

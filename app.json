@@ -2,6 +2,7 @@
   "expo": {
     "name": "Dance Class App",
     "slug": "dance-class-app",
+    "scheme": "dance-class-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

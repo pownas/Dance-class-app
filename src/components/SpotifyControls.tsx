@@ -41,6 +41,7 @@ interface SpotifyControlsProps {
   onSeek?: (value: number) => void;
   onSkipBack10?: () => void;
   onSkipForward10?: () => void;
+  onLogout?: () => void;
 }
 
 export default function SpotifyControls({
@@ -63,6 +64,7 @@ export default function SpotifyControls({
   onSeek,
   onSkipBack10,
   onSkipForward10,
+  onLogout,
 }: SpotifyControlsProps) {
   const [queueVisible, setQueueVisible] = useState(false);
 
@@ -75,15 +77,26 @@ export default function SpotifyControls({
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.title}>Spotify</Text>
-        {tracks && tracks.length > 0 && (
-          <TouchableOpacity
-            onPress={() => setQueueVisible(true)}
-            accessibilityLabel="Open queue"
-            style={styles.queueButton}
-          >
-            <Text style={styles.queueIcon}>☰</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.headerActions}>
+          {tracks && tracks.length > 0 && (
+            <TouchableOpacity
+              onPress={() => setQueueVisible(true)}
+              accessibilityLabel="Open queue"
+              style={styles.queueButton}
+            >
+              <Text style={styles.queueIcon}>☰</Text>
+            </TouchableOpacity>
+          )}
+          {onLogout && (
+            <TouchableOpacity
+              onPress={onLogout}
+              accessibilityLabel="Logga ut från Spotify"
+              style={styles.logoutButton}
+            >
+              <Text style={styles.logoutIcon}>⏏</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
       {currentTrack && (
         <View style={styles.trackInfo}>
@@ -185,6 +198,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   title: {
     color: '#fff',
     fontSize: 12,
@@ -200,6 +218,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     opacity: 0.85,
+  },
+  logoutButton: {
+    padding: 4,
+  },
+  logoutIcon: {
+    color: '#fff',
+    fontSize: 16,
+    opacity: 0.7,
   },
   trackInfo: {
     alignItems: 'center',
