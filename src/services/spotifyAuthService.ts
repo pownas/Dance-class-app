@@ -7,6 +7,14 @@ import { SpotifyToken, SpotifyUser } from '../types';
 // ---------------------------------------------------------------------------
 export const SPOTIFY_CLIENT_ID = process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID ?? '';
 
+/**
+ * Returns true if the Spotify Client ID has been configured via the
+ * EXPO_PUBLIC_SPOTIFY_CLIENT_ID environment variable.
+ */
+export function isSpotifyConfigured(): boolean {
+  return SPOTIFY_CLIENT_ID.length > 0;
+}
+
 export const SPOTIFY_SCOPES = [
   'user-read-email',
   'user-read-private',

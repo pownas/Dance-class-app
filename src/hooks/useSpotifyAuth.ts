@@ -9,10 +9,10 @@ import {
   generateCodeVerifier,
   getCurrentUser,
   getStoredToken,
+  isSpotifyConfigured,
   logout as serviceLogout,
   refreshAccessToken,
   saveToken,
-  SPOTIFY_CLIENT_ID,
 } from '../services/spotifyAuthService';
 
 /**
@@ -57,8 +57,9 @@ export function useSpotifyAuth() {
         if (!cancelled) {
           setAuthState({ status: 'authenticated', user, token: freshToken });
         }
-      } catch {
+      } catch (err) {
         if (!cancelled) {
+          console.warn('[SpotifyAuth] Failed to restore session:', err);
           await clearToken();
           setAuthState({ status: 'unauthenticated' });
         }
@@ -71,7 +72,7 @@ export function useSpotifyAuth() {
   // Login
   // -------------------------------------------------------------------------
   const login = useCallback(async () => {
-    if (!SPOTIFY_CLIENT_ID) {
+    if (!isSpotifyConfigured()) {
       setAuthState({
         status: 'error',
         message: 'Spotify Client ID is not configured. Set EXPO_PUBLIC_SPOTIFY_CLIENT_ID.',
@@ -117,6 +118,7 @@ export function useSpotifyAuth() {
       const { user, token: freshToken } = await getCurrentUser(token);
       setAuthState({ status: 'authenticated', user, token: freshToken });
     } catch (err) {
+      console.error('[SpotifyAuth] Login failed:', err);
       const message = err instanceof Error ? err.message : 'Okänt fel vid inloggning';
       setAuthState({ status: 'error', message });
     }
