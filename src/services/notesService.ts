@@ -1,6 +1,5 @@
 import { NoteVersion } from '../types';
-
-const NOTES_API_URL = 'https://din-backend-api.com/api/notes/version';
+import { buildUrl } from './apiConfigService';
 
 /**
  * Sends the current note content to the backend as a new version entry.
@@ -12,7 +11,8 @@ export async function saveNoteVersion(markdownContent: string): Promise<void> {
     markdownContent,
   };
 
-  const response = await fetch(NOTES_API_URL, {
+  const url = await buildUrl('/notes/version');
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

@@ -3,6 +3,39 @@ export interface NoteVersion {
   markdownContent: string;
 }
 
+export interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  bpm?: number;
+  notes?: string;
+}
+
+export interface SongInput {
+  title: string;
+  artist: string;
+  bpm?: number;
+  notes?: string;
+}
+
+export interface CourseText {
+  id: string;
+  title: string;
+  content: string;
+  tags?: string[];
+}
+
+export interface CourseTextInput {
+  title: string;
+  content: string;
+  tags?: string[];
+}
+
+export interface ApiError {
+  error: string;
+  details?: string;
+}
+
 export type PlaybackState = 'playing' | 'paused';
 
 export interface Track {

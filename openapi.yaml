@@ -1,0 +1,398 @@
+openapi: "3.1.0"
+info:
+  title: Dance Class App API
+  version: "1.0.0"
+  description: |
+    Backend API for the Dance Class App.
+    Handles persistence for the music playlist (songs) and course materials (course texts).
+    Notes version history is also stored through this API.
+  license:
+    name: MIT
+
+servers:
+  - url: https://din-backend-api.com/api
+    description: Default backend (replace with your own deployment URL)
+
+tags:
+  - name: songs
+    description: CRUD operations for songs in the dance-class playlist
+  - name: course-texts
+    description: CRUD operations for course material stored as Markdown
+  - name: notes
+    description: Version history for the free-text notes editor
+
+paths:
+  # ---------------------------------------------------------------------------
+  # Songs
+  # ---------------------------------------------------------------------------
+  /songs:
+    get:
+      operationId: listSongs
+      summary: List all songs
+      tags: [songs]
+      responses:
+        "200":
+          description: Array of songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+              example:
+                - id: "1"
+                  title: "West Coast Swing Mix Vol. 1"
+                  artist: "WCS Collection"
+                  bpm: 102
+                  notes: ""
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      operationId: createSong
+      summary: Add a new song
+      tags: [songs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SongInput"
+            example:
+              title: "Boogie Wonderland"
+              artist: "Earth, Wind & Fire"
+              bpm: 119
+              notes: "Great for WCS warm-up"
+      responses:
+        "201":
+          description: Created song
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Song"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /songs/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ResourceId"
+
+    get:
+      operationId: getSong
+      summary: Get a song by ID
+      tags: [songs]
+      responses:
+        "200":
+          description: Song object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Song"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    put:
+      operationId: updateSong
+      summary: Replace a song by ID
+      tags: [songs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SongInput"
+      responses:
+        "200":
+          description: Updated song
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Song"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      operationId: deleteSong
+      summary: Delete a song by ID
+      tags: [songs]
+      responses:
+        "204":
+          description: Song deleted (no content)
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  # ---------------------------------------------------------------------------
+  # Course texts
+  # ---------------------------------------------------------------------------
+  /course-texts:
+    get:
+      operationId: listCourseTexts
+      summary: List all course texts
+      tags: [course-texts]
+      responses:
+        "200":
+          description: Array of course texts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CourseText"
+              example:
+                - id: "ct-1"
+                  title: "WCS Grundsteg"
+                  content: "# WCS Grundsteg\n\n1. Starta med grundsteget\n2. Lägg till arm-styling\n"
+                  tags: ["wcs", "grundsteg"]
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      operationId: createCourseText
+      summary: Add a new course text
+      tags: [course-texts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseTextInput"
+            example:
+              title: "WCS Grundsteg"
+              content: "# WCS Grundsteg\n\n1. Starta med grundsteget\n"
+              tags: ["wcs", "grundsteg"]
+      responses:
+        "201":
+          description: Created course text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseText"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /course-texts/{id}:
+    parameters:
+      - $ref: "#/components/parameters/ResourceId"
+
+    get:
+      operationId: getCourseText
+      summary: Get a course text by ID
+      tags: [course-texts]
+      responses:
+        "200":
+          description: Course text object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseText"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    put:
+      operationId: updateCourseText
+      summary: Replace a course text by ID
+      tags: [course-texts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CourseTextInput"
+      responses:
+        "200":
+          description: Updated course text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CourseText"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      operationId: deleteCourseText
+      summary: Delete a course text by ID
+      tags: [course-texts]
+      responses:
+        "204":
+          description: Course text deleted (no content)
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  # ---------------------------------------------------------------------------
+  # Notes version history
+  # ---------------------------------------------------------------------------
+  /notes/version:
+    post:
+      operationId: saveNoteVersion
+      summary: Save a new version of the notes content
+      tags: [notes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteVersion"
+            example:
+              timestamp: "2026-03-10T05:30:00.000Z"
+              markdownContent: "# Danskurs Vecka 1\n\n- Uppvärmning 10 min\n"
+      responses:
+        "201":
+          description: Version saved
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+# ---------------------------------------------------------------------------
+# Reusable components
+# ---------------------------------------------------------------------------
+components:
+  parameters:
+    ResourceId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Unique resource identifier
+
+  schemas:
+    Song:
+      type: object
+      required: [id, title, artist]
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        title:
+          type: string
+          description: Song title
+        artist:
+          type: string
+          description: Artist name
+        bpm:
+          type: integer
+          minimum: 1
+          description: Beats per minute (optional)
+        notes:
+          type: string
+          description: Free-text notes for this song (optional)
+
+    SongInput:
+      type: object
+      required: [title, artist]
+      properties:
+        title:
+          type: string
+        artist:
+          type: string
+        bpm:
+          type: integer
+          minimum: 1
+        notes:
+          type: string
+
+    CourseText:
+      type: object
+      required: [id, title, content]
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        title:
+          type: string
+          description: Human-readable title
+        content:
+          type: string
+          description: Markdown content
+        tags:
+          type: array
+          items:
+            type: string
+          description: Optional list of topic tags
+
+    CourseTextInput:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    NoteVersion:
+      type: object
+      required: [timestamp, markdownContent]
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 creation timestamp
+        markdownContent:
+          type: string
+          description: Full Markdown content at the time of saving
+
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+        details:
+          type: string
+          description: Optional extra details
+
+  responses:
+    BadRequest:
+      description: Invalid request body or parameters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            error: "Bad Request"
+            details: "Field 'title' is required"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            error: "Not Found"
+            details: "No resource with id 'abc'"
+
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+          example:
+            error: "Internal Server Error"
