@@ -9,6 +9,8 @@ import { PlaybackState, Playlist } from './src/types';
 
 const INITIAL_NOTES = '# Danskurs Vecka 1\n\n- Uppvärmning 10 min\n- Koreografi del 1\n- Repetition av steg från förra veckan\n\n## WCS Steg 1\n\n1. Starta med grundsteget\n2. Lägg till arm-styling\n';
 const AUTOSAVE_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
+const SONG_DURATION = 180; // seconds, demo duration for progress simulation
+const SKIP_10_SECONDS_PERCENT = (10 / SONG_DURATION) * 100;
 
 const DEMO_PLAYLIST: Playlist = {
   name: 'WCS Danskurs Spellista',
@@ -53,6 +55,7 @@ export default function App() {
   const [syncStatus, setSyncStatus] = useState<'saved' | 'pending' | 'error'>('saved');
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [trackNotes, setTrackNotes] = useState<Record<string, string>>({});
+  const [songProgress, setSongProgress] = useState(0);
 
   const lastSyncedNotesRef = useRef(INITIAL_NOTES);
 
@@ -82,6 +85,27 @@ export default function App() {
 
     return () => clearInterval(interval);
   }, [notes, syncToBackend]);
+
+  // Advance song progress every second when playing; auto-advance track at end
+  useEffect(() => {
+    if (playbackState !== 'playing') return;
+    const interval = setInterval(() => {
+      setSongProgress(prev => {
+        const next = prev + (100 / SONG_DURATION);
+        if (next >= 100) {
+          setCurrentTrackIndex(i => (i + 1) % DEMO_PLAYLIST.tracks.length);
+          return 0;
+        }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [playbackState]);
+
+  // Reset progress when track changes
+  useEffect(() => {
+    setSongProgress(0);
+  }, [currentTrackIndex]);
 
   const handleNotesChange = (text: string) => {
     setNotes(text);
@@ -118,6 +142,18 @@ export default function App() {
     setCurrentTrackIndex(index);
   };
 
+  const handleSeek = (value: number) => {
+    setSongProgress(value);
+  };
+
+  const handleSkipBack10 = () => {
+    setSongProgress(prev => Math.max(0, prev - SKIP_10_SECONDS_PERCENT));
+  };
+
+  const handleSkipForward10 = () => {
+    setSongProgress(prev => Math.min(100, prev + SKIP_10_SECONDS_PERCENT));
+  };
+
   const currentTrack = DEMO_PLAYLIST.tracks[currentTrackIndex];
 
   return (
@@ -132,12 +168,17 @@ export default function App() {
         tracks={DEMO_PLAYLIST.tracks}
         currentTrackIndex={currentTrackIndex}
         trackNotes={trackNotes}
+        songProgress={songProgress}
+        songDuration={SONG_DURATION}
         onTogglePlay={handleTogglePlay}
         onNextTrack={handleNextTrack}
         onPrevTrack={handlePrevTrack}
         onVolumeChange={handleVolumeChange}
         onTrackNoteChange={handleTrackNoteChange}
         onSelectTrack={handleSelectTrack}
+        onSeek={handleSeek}
+        onSkipBack10={handleSkipBack10}
+        onSkipForward10={handleSkipForward10}
       />
       <NotesEditor
         value={notes}
