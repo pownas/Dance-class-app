@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<!--
+    Colors used across the Dance Class App.
+    Named to mirror the constants in the React Native source:
+        SPOTIFY_GREEN = '#1DB954'
+        SPOTIFY_BLACK = '#191414'
+        SKIP_BUTTON_COLOR = '#FF8C00'
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- ── Brand colours ── -->
+    <Color x:Key="SpotifyGreen">#1DB954</Color>
+    <Color x:Key="SpotifyBlack">#191414</Color>
+    <Color x:Key="SpotifyCardBg">#282828</Color>
+
+    <!-- ── Text colours ── -->
+    <Color x:Key="SpotifySubtitle">#BFB9B9</Color><!-- rgba(255,255,255,0.75) on dark -->
+    <Color x:Key="SpotifyDisclaimer">#666060</Color><!-- rgba(255,255,255,0.4) on dark -->
+
+    <!-- ── Error colours ── -->
+    <Color x:Key="ErrorBoxBg">#261A1A</Color>       <!-- rgba(255,80,80,0.15) on dark -->
+    <Color x:Key="ErrorBoxBorder">#FF5050</Color>    <!-- rgba(255,80,80,0.4) -->
+    <Color x:Key="ErrorText">#FF6B6B</Color>
+
+    <!-- ── Playback controls ── -->
+    <Color x:Key="SkipButtonColor">#FF8C00</Color>
+
+    <!-- ── Slider ── -->
+    <Color x:Key="SliderMaxTrack">#66FFFFFF</Color> <!-- rgba(255,255,255,0.4) -->
+    <Color x:Key="ProgressTimeColor">#D9FFFFFF</Color><!-- rgba(255,255,255,0.85) -->
+
+    <!-- ── Track note input ── -->
+    <Color x:Key="TrackNoteBackground">#26000000</Color><!-- rgba(0,0,0,0.15) -->
+    <Color x:Key="TrackNotePlaceholder">#7FFFFFFF</Color><!-- rgba(255,255,255,0.5) -->
+
+    <!-- ── Notes editor ── -->
+    <Color x:Key="PageBackground">#F5F5F5</Color>
+    <Color x:Key="NoteHeaderColor">#555555</Color>
+    <Color x:Key="NotePlaceholderColor">#AAAAAA</Color>
+    <Color x:Key="NoteTextColor">#222222</Color>
+
+    <!-- ── Queue panel ── -->
+    <Color x:Key="QueuePanelBg">#282828</Color>
+
+</ResourceDictionary>

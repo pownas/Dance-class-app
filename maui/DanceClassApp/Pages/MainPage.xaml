@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    MainPage – mirrors SpotifyControls.tsx + NotesEditor.tsx in a single layout.
+
+    Layout (top to bottom):
+    ┌────────────────────────────────────────────┐
+    │  SpotifyControls bar (SpotifyGreen header) │
+    │    – Track info, progress bar              │
+    │    – Playback buttons (prev/−10/play/+10/next) │
+    │    – Volume slider                         │
+    │    – Per-track note input                  │
+    ├────────────────────────────────────────────┤
+    │  NotesEditor (Markdown text area + status) │
+    └────────────────────────────────────────────┘
+
+    The playlist queue is shown as a modal sheet (CollectionView over the controls)
+    toggled by the ☰ button.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DanceClassApp.ViewModels"
+             xmlns:models="clr-namespace:DanceClassApp.Models"
+             x:Class="DanceClassApp.Pages.MainPage"
+             x:DataType="vm:MainViewModel"
+             BackgroundColor="{StaticResource PageBackground}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- ROW 0 – Spotify Controls bar                                    -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <VerticalStackLayout Grid.Row="0"
+                             BackgroundColor="{StaticResource SpotifyGreen}"
+                             Padding="16">
+
+            <!-- Header row: "SPOTIFY" label + queue and logout buttons -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                <Label Text="SPOTIFY"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       Opacity="0.85"
+                       CharacterSpacing="1.5"
+                       VerticalOptions="Center" />
+
+                <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                    <!-- Queue button -->
+                    <Button Text="☰"
+                            FontSize="18"
+                            BackgroundColor="Transparent"
+                            TextColor="White"
+                            Opacity="0.85"
+                            Padding="4"
+                            Clicked="OnQueueButtonClicked"
+                            SemanticProperties.Description="Open queue"
+                            AutomationId="QueueButton" />
+                    <!-- Logout button -->
+                    <Button Text="⏏"
+                            FontSize="16"
+                            BackgroundColor="Transparent"
+                            TextColor="White"
+                            Opacity="0.7"
+                            Padding="4"
+                            Command="{Binding LogoutCommand}"
+                            SemanticProperties.Description="Logga ut från Spotify"
+                            AutomationId="LogoutButton" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!-- Track info -->
+            <VerticalStackLayout HorizontalOptions="Center" Margin="0,0,0,8">
+                <Label Text="{Binding CurrentTrack.Name}"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       LineBreakMode="TailTruncation" />
+                <Label FontSize="13"
+                       TextColor="{StaticResource SpotifySubtitle}"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       Margin="0,2,0,0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="{Binding CurrentTrack.Artist}" />
+                            <Span Text="  •  " />
+                            <Span Text="{Binding CurrentTrack.Bpm, StringFormat='{0} BPM'}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+
+            <!-- Progress row: elapsed – slider – duration -->
+            <Grid ColumnDefinitions="40,*,40" Margin="0,0,0,10">
+                <Label Text="{Binding FormattedElapsed}"
+                       FontSize="11"
+                       TextColor="{StaticResource ProgressTimeColor}"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center" />
+                <Slider Grid.Column="1"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding SongProgress}"
+                        MinimumTrackColor="White"
+                        MaximumTrackColor="{StaticResource SliderMaxTrack}"
+                        ThumbColor="White"
+                        ValueChanged="OnProgressSliderValueChanged"
+                        SemanticProperties.Description="Song progress" />
+                <Label Grid.Column="2"
+                       Text="{Binding FormattedDuration}"
+                       FontSize="11"
+                       TextColor="{StaticResource ProgressTimeColor}"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center" />
+            </Grid>
+
+            <!-- Playback controls row -->
+            <HorizontalStackLayout HorizontalOptions="Center"
+                                   Spacing="12"
+                                   Margin="0,0,0,12">
+
+                <!-- Previous track -->
+                <Button Text="⏮"
+                        FontSize="22"
+                        BackgroundColor="{StaticResource SkipButtonColor}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Padding="10"
+                        Command="{Binding PrevTrackCommand}"
+                        SemanticProperties.Description="Previous track" />
+
+                <!-- Skip back 10 s -->
+                <Button Text="−10"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        BackgroundColor="{StaticResource SkipButtonColor}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Padding="10"
+                        Command="{Binding SkipBack10Command}"
+                        SemanticProperties.Description="Skip back 10 seconds" />
+
+                <!-- Play / Pause -->
+                <Button Text="{Binding PlayButtonText}"
+                        FontSize="26"
+                        BackgroundColor="White"
+                        TextColor="{StaticResource SpotifyGreen}"
+                        CornerRadius="32"
+                        WidthRequest="64"
+                        HeightRequest="64"
+                        Command="{Binding TogglePlayCommand}"
+                        SemanticProperties.Description="Play or pause"
+                        AutomationId="PlayPauseButton" />
+
+                <!-- Skip forward 10 s -->
+                <Button Text="+10"
+                        FontSize="13"
+                        FontAttributes="Bold"
+                        BackgroundColor="{StaticResource SkipButtonColor}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Padding="10"
+                        Command="{Binding SkipForward10Command}"
+                        SemanticProperties.Description="Skip forward 10 seconds" />
+
+                <!-- Next track -->
+                <Button Text="⏭"
+                        FontSize="22"
+                        BackgroundColor="{StaticResource SkipButtonColor}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        Padding="10"
+                        Command="{Binding NextTrackCommand}"
+                        SemanticProperties.Description="Next track" />
+            </HorizontalStackLayout>
+
+            <!-- Volume row -->
+            <Grid ColumnDefinitions="24,*,24">
+                <Label Text="🔈"
+                       FontSize="16"
+                       TextColor="White"
+                       VerticalOptions="Center" />
+                <Slider Grid.Column="1"
+                        Minimum="0"
+                        Maximum="100"
+                        Value="{Binding Volume}"
+                        MinimumTrackColor="White"
+                        MaximumTrackColor="{StaticResource SliderMaxTrack}"
+                        ThumbColor="White"
+                        SemanticProperties.Description="Volume" />
+                <Label Grid.Column="2"
+                       Text="🔊"
+                       FontSize="16"
+                       TextColor="White"
+                       VerticalOptions="Center"
+                       HorizontalOptions="End" />
+            </Grid>
+
+            <!-- Per-track note input -->
+            <Editor Placeholder="Anteckning om låt..."
+                    PlaceholderColor="{StaticResource TrackNotePlaceholder}"
+                    TextColor="White"
+                    BackgroundColor="{StaticResource TrackNoteBackground}"
+                    Text="{Binding CurrentTrackNote}"
+                    TextChanged="OnTrackNoteTextChanged"
+                    AutoSize="TextChanges"
+                    MinimumHeightRequest="40"
+                    Margin="0,10,0,0"
+                    AutomationId="TrackNoteEditor" />
+
+        </VerticalStackLayout>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- ROW 1 – Notes Editor                                            -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*" Padding="10">
+
+            <!-- Header: title + sync status -->
+            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+                <Label Text="ANTECKNINGAR (MARKDOWN)"
+                       FontSize="13"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource NoteHeaderColor}"
+                       CharacterSpacing="1"
+                       VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="{Binding SyncStatusLabel}"
+                       FontSize="12"
+                       TextColor="{Binding SyncStatusColor}"
+                       VerticalOptions="Center"
+                       AutomationId="SyncStatusLabel" />
+            </Grid>
+
+            <!-- Markdown text editor -->
+            <Editor Grid.Row="1"
+                    Placeholder="Skriv dina instruktioner i Markdown här..."
+                    PlaceholderColor="{StaticResource NotePlaceholderColor}"
+                    Text="{Binding Notes}"
+                    TextChanged="OnNotesTextChanged"
+                    BackgroundColor="White"
+                    TextColor="{StaticResource NoteTextColor}"
+                    FontSize="16"
+                    AutomationId="NotesEditor" />
+
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- Playlist queue overlay (shown when QueueVisible = true)         -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid x:Name="QueueOverlay"
+              Grid.RowSpan="2"
+              IsVisible="False"
+              BackgroundColor="rgba(0,0,0,0.6)">
+
+            <Border BackgroundColor="{StaticResource QueuePanelBg}"
+                    StrokeShape="RoundRectangle 16,16,0,0"
+                    Stroke="Transparent"
+                    VerticalOptions="End"
+                    MaximumHeightRequest="480">
+                <Grid RowDefinitions="Auto,*">
+
+                    <!-- Queue header -->
+                    <Grid ColumnDefinitions="*,Auto" Padding="16,16,16,8">
+                        <Label Text="{Binding PlaylistName}"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="✕"
+                                FontSize="18"
+                                BackgroundColor="Transparent"
+                                TextColor="White"
+                                Opacity="0.7"
+                                Clicked="OnQueueCloseClicked" />
+                    </Grid>
+
+                    <!-- Track list -->
+                    <CollectionView Grid.Row="1"
+                                    ItemsSource="{Binding Tracks}"
+                                    SelectionMode="None"
+                                    Margin="0,0,0,8">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Track">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      Padding="16,10">
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnTrackTapped" />
+                                    </Grid.GestureRecognizers>
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding Name}"
+                                               FontSize="15"
+                                               TextColor="White"
+                                               LineBreakMode="TailTruncation" />
+                                        <Label Text="{Binding Artist}"
+                                               FontSize="12"
+                                               TextColor="{StaticResource SpotifySubtitle}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1"
+                                           Text="{Binding Bpm, StringFormat='{0} BPM'}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource SpotifySubtitle}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </Grid>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

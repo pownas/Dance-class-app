@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:pages="clr-namespace:DanceClassApp.Pages"
+       x:Class="DanceClassApp.AppShell"
+       Shell.NavBarIsVisible="False">
+
+    <!-- The shell starts with the login route.
+         After successful Spotify authentication, the app navigates to //main. -->
+    <ShellContent Title="Login"
+                  ContentTemplate="{DataTemplate pages:LoginPage}"
+                  Route="login" />
+
+    <ShellContent Title="Main"
+                  ContentTemplate="{DataTemplate pages:MainPage}"
+                  Route="main" />
+
+</Shell>
