@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DanceClassApp.Models;
 using DanceClassApp.Services;
@@ -18,7 +18,6 @@ public partial class LoginViewModel : BaseViewModel
     private string _errorMessage = string.Empty;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasError))]
     private bool _hasError;
 
     public LoginViewModel(ISpotifyAuthService authService)

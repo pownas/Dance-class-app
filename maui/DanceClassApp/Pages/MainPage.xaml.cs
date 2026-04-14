@@ -1,4 +1,4 @@
-using DanceClassApp.Models;
+﻿using DanceClassApp.Models;
 using DanceClassApp.ViewModels;
 
 namespace DanceClassApp.Pages;
@@ -37,7 +37,7 @@ public partial class MainPage : ContentPage
 
     private void OnNotesTextChanged(object sender, TextChangedEventArgs e)
     {
-        _vm.OnNotesChanged(e.NewTextValue);
+        _vm.UpdateNotes(e.NewTextValue);
     }
 
     // -------------------------------------------------------------------------

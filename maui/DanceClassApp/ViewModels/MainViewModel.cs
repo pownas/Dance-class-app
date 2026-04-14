@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DanceClassApp.Models;
 using DanceClassApp.Services;
@@ -198,7 +198,7 @@ public partial class MainViewModel : BaseViewModel
     // -------------------------------------------------------------------------
 
     /// <summary>Called whenever the editor text changes.</summary>
-    public void OnNotesChanged(string text)
+    public void UpdateNotes(string text)
     {
         Notes = text;
         SyncStatus = text != _lastSyncedNotes ? SyncStatusKind.Pending : SyncStatusKind.Saved;

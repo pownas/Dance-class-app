@@ -1,8 +1,7 @@
-using CommunityToolkit.Maui;
+﻿using CommunityToolkit.Maui;
 using DanceClassApp.Services;
 using DanceClassApp.ViewModels;
 using DanceClassApp.Pages;
-using Microsoft.Extensions.Logging;
 
 namespace DanceClassApp;
 
@@ -38,10 +37,6 @@ public static class MauiProgram
         // ---------- Pages ----------
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
-
-#if DEBUG
-        builder.Logging.AddDebug();
-#endif
 
         return builder.Build();
     }
