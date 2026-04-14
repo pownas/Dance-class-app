@@ -2,6 +2,7 @@
 using DanceClassApp.Services;
 using DanceClassApp.ViewModels;
 using DanceClassApp.Pages;
+using Microsoft.Extensions.Logging;
 
 namespace DanceClassApp;
 
@@ -35,6 +36,7 @@ public static class MauiProgram
         builder.Services.AddTransient<MainViewModel>();
 
         // ---------- Pages ----------
+        builder.Services.AddSingleton<AppShell>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<MainPage>();
 

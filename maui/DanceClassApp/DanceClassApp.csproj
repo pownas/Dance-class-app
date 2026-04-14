@@ -1,6 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
     <RootNamespace>DanceClassApp</RootNamespace>
     <UseMaui>true</UseMaui>
@@ -31,7 +32,7 @@
     <MauiSplashScreen Include="Resources\Images\splash.png" Color="#191414" />
 
     <!-- Images -->
-    <MauiImage Include="Resources\Images\*" />
+    <MauiImage Include="Resources\Images\*" Exclude="Resources\Images\appicon.png;Resources\Images\splash.png" />
 
     <!-- Fonts -->
     <MauiFont Include="Resources\Fonts\*" />
