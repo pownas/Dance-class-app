@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    LoginPage – mirrors SpotifyLogin.tsx
+    Shows a Spotify-branded login card with a login button.
+    While loading, the button is replaced by an ActivityIndicator.
+    If the login fails, an error message is displayed above the button.
+-->
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:DanceClassApp.ViewModels"
+             x:Class="DanceClassApp.Pages.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="{StaticResource SpotifyBlack}"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             MaximumWidthRequest="360"
+                             Spacing="0">
+
+            <!-- Card -->
+            <Border BackgroundColor="{StaticResource SpotifyCardBg}"
+                    StrokeShape="RoundRectangle 16"
+                    Stroke="Transparent"
+                    Padding="32">
+                <VerticalStackLayout Spacing="0">
+
+                    <!-- Music note emoji -->
+                    <Label Text="🎵"
+                           FontSize="56"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,12" />
+
+                    <!-- App title -->
+                    <Label Text="Dance Class App"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           Margin="0,0,0,12" />
+
+                    <!-- Subtitle -->
+                    <Label Text="Logga in med Spotify för att spela upp musik under dina danslektioner."
+                           FontSize="14"
+                           TextColor="{StaticResource SpotifySubtitle}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap"
+                           Margin="0,0,0,28" />
+
+                    <!-- Error box (only visible when HasError = true) -->
+                    <Border IsVisible="{Binding HasError}"
+                            BackgroundColor="{StaticResource ErrorBoxBg}"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="{StaticResource ErrorBoxBorder}"
+                            Padding="12"
+                            Margin="0,0,0,16">
+                        <Label Text="{Binding ErrorMessage}"
+                               FontSize="13"
+                               TextColor="{StaticResource ErrorText}"
+                               HorizontalTextAlignment="Center" />
+                    </Border>
+
+                    <!-- Login button / spinner -->
+                    <Button Text="Logga in med Spotify"
+                            Command="{Binding LoginCommand}"
+                            IsVisible="{Binding IsNotBusy}"
+                            BackgroundColor="{StaticResource SpotifyGreen}"
+                            TextColor="{StaticResource SpotifyBlack}"
+                            FontAttributes="Bold"
+                            FontSize="15"
+                            CornerRadius="50"
+                            HeightRequest="48"
+                            Margin="0,0,0,20"
+                            AutomationId="LoginButton"
+                            SemanticProperties.Description="Logga in med Spotify" />
+
+                    <ActivityIndicator IsVisible="{Binding IsBusy}"
+                                       IsRunning="{Binding IsBusy}"
+                                       Color="{StaticResource SpotifyBlack}"
+                                       HeightRequest="48"
+                                       Margin="0,0,0,20" />
+
+                    <!-- Disclaimer -->
+                    <Label Text="Du behöver ett Spotify-konto för att använda den här funktionen."
+                           FontSize="11"
+                           TextColor="{StaticResource SpotifyDisclaimer}"
+                           HorizontalTextAlignment="Center"
+                           LineBreakMode="WordWrap" />
+
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

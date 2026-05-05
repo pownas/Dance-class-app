@@ -4,6 +4,10 @@ A cross-platform mobile app for dance teachers and choreographers, combining **S
 
 Built with **React Native + Expo** for iOS & Android from a single codebase.
 
+> **Migrating to .NET MAUI?** See [`MIGRATION.md`](MIGRATION.md) for a full
+> analysis and step-by-step guide. A complete MAUI port of the app lives in the
+> [`maui/`](maui/) directory.
+
 ---
 
 ## Features
@@ -21,6 +25,14 @@ Dance-class-app/
 ├── App.tsx                        # Root component — wires everything together
 ├── index.ts                       # Expo entry point
 ├── app.json                       # Expo configuration
+├── MIGRATION.md                   # Guide for migrating to .NET MAUI
+├── maui/                          # .NET MAUI port (iOS + Android, C#/XAML)
+│   ├── DanceClassApp.sln
+│   └── DanceClassApp/
+│       ├── Models/                # C# equivalents of src/types/index.ts
+│       ├── Services/              # C# equivalents of src/services/
+│       ├── ViewModels/            # MVVM ViewModels
+│       └── Pages/                 # XAML pages (LoginPage, MainPage)
 ├── src/
 │   ├── components/
 │   │   ├── SpotifyControls.tsx    # Playback controls + volume slider
